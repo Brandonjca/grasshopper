@@ -1,58 +1,105 @@
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable prettier/prettier */
-import React, {useState} from 'react';
-import {View, TextInput, Text, Alert} from 'react-native';
-import {styles} from '../themes/appTheme';
-import {StackScreenProps} from '@react-navigation/stack';
-import {ScrollView, TouchableOpacity} from 'react-native-gesture-handler';
-import DateTimePicker from '@react-native-community/datetimepicker';
-import Icon from 'react-native-vector-icons/Ionicons';
-import {Image} from 'react-native';
+import React, { useState } from 'react'
+import { View, TextInput, Text, Alert } from 'react-native'
+import { styles } from '../themes/appTheme'
+import { StackScreenProps } from '@react-navigation/stack'
+import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler'
+import DateTimePicker from '@react-native-community/datetimepicker'
+import Icon from 'react-native-vector-icons/Ionicons'
+import { Image } from 'react-native'
+import { api } from '../api/api'
 
 // import { DatePickerAndroid } from 'react-native';
 
 interface Props extends StackScreenProps<any, any> {}
 
-export const RegisterScreen = ({navigation}: Props) => {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [age, setAge] = useState('');
-  const [birthdate, setBirthdate] = useState('');
+export const RegisterScreen = ({ navigation }: Props) => {
+  const [firstName, setfirstName] = useState('')
+  const [lastName, setlastName] = useState('')
+  const [username, setUsername] = useState('')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [age, setAge] = useState('')
+  const [birthdate, setBirthdate] = useState('')
   // const [showDatePicker, setShowDatePicker] = useState(false);
-  const [passwordConfirm, setPasswordConfirm] = useState('');
+  const [passwordConfirm, setPasswordConfirm] = useState('')
 
-  const handleRegister = () => {
-    // Aquí puedes realizar la lógica de registro con la información ingresada
-    console.log('Name:', name);
-    console.log('Email:', email);
-    console.log('Password:', password);
-    console.log('Confirmar contraseña:', passwordConfirm);
-    console.log('Age:', age);
-    console.log('Birthdate:', birthdate);
-    // navigation.navigate('LoginScreen');
+  interface credentials {
+    firstName: string
+    lastName: string
+    username: string
+    email: string
+    password: string
+  }
 
-    if (password === passwordConfirm) {
-      console.log('las contraseñas coinciden: ', password);
-      navigation.navigate('LoginScreen');
-    } else {
-      Alert.alert('Error', 'Las contraseñas no coinciden', [{text: 'Aceptar'}]);
-      navigation.navigate('RegisterScreen');
+  const register = async ({
+    firstName,
+    lastName,
+    username,
+    email,
+    password,
+  }: credentials) => {
+    try {
+      const RES = await api.post('auth/sign-up', {
+        firstName,
+        lastName,
+        username,
+        email,
+        password,
+      })
+      console.log(RES)
+      return true
+    } catch (error) {
+      return false
     }
-  };
+  }
 
-  const [showDatePicker, setShowDatePicker] = useState(false);
+  const handleRegister = async() => {
+    // Aquí puedes realizar la lógica de registro con la información ingresada
+    // console.log('Name:', name);
+    // console.log('Email:', email);
+    // console.log('Password:', password);
+    // console.log('Confirmar contraseña:', passwordConfirm);
+    // console.log('Age:', age);
+    // console.log('Birthdate:', birthdate);
+    // navigation.navigate('LoginScreen');
+    if (
+      firstName === '' ||
+      lastName === '' ||
+      password === '' ||
+      username === '' ||
+      email === ''
+    ) {
+      return Alert.alert(
+        'Register error',
+        'Por favor complete todos los campos',
+      )
+    }
+    if (password === passwordConfirm) {
+      console.log('las contraseñas coinciden: ', password)
+      navigation.navigate('LoginScreen')
+    } else {
+      Alert.alert('Error', 'Las contraseñas no coinciden', [
+        { text: 'Aceptar' },
+      ])
+    } if (await register({ firstName, lastName, username, email, password })){
+      navigation.navigate('RegisterScreen')
+    }
+  }
+
+  const [showDatePicker, setShowDatePicker] = useState(false)
 
   const handleDateSelection = (event: Event, date?: Date) => {
-    setShowDatePicker(false);
+    setShowDatePicker(false)
     if (date) {
-      setBirthdate(date.toDateString());
+      setBirthdate(date.toDateString())
     }
-  };
+  }
 
   const openDatePicker = () => {
-    setShowDatePicker(true);
-  };
+    setShowDatePicker(true)
+  }
 
   return (
     <ScrollView>
@@ -65,10 +112,10 @@ export const RegisterScreen = ({navigation}: Props) => {
         }}
         source={require('../assets/logograsshopper.webp')}
       />
-      <View style={{padding: 20, alignContent: 'center'}}>
+      <View style={{ padding: 20, alignContent: 'center' }}>
         <Text>Nombre:</Text>
-        <View style={{flexDirection: 'row', alignItems: 'center'}}>
-          <View style={{position: 'relative', flex: 1}}>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <View style={{ position: 'relative', flex: 1 }}>
             <TextInput
               style={{
                 ...styles.botonesText,
@@ -79,20 +126,83 @@ export const RegisterScreen = ({navigation}: Props) => {
                 borderWidth: 1,
                 borderRadius: 20,
               }}
-              placeholder="Name"
-              onChangeText={text => setName(text)}
-              value={name}
+              placeholder="Nombre"
+              onChangeText={(text) => setfirstName(text)}
+              value={firstName}
             />
             <Icon
               name="person-outline"
               size={20}
-              style={{position: 'absolute', top: 15, left: 10, color: 'green'}}
+              style={{
+                position: 'absolute',
+                top: 15,
+                left: 10,
+                color: 'green',
+              }}
+            />
+          </View>
+        </View>
+        <Text>Apellido:</Text>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <View style={{ position: 'relative', flex: 1 }}>
+            <TextInput
+              style={{
+                ...styles.botonesText,
+                marginBottom: 20,
+                color: 'black',
+                textAlign: 'center',
+                borderColor: 'green',
+                borderWidth: 1,
+                borderRadius: 20,
+              }}
+              placeholder="Apellido"
+              onChangeText={(text) => setlastName(text)}
+              value={lastName}
+            />
+            <Icon
+              name="person-outline"
+              size={20}
+              style={{
+                position: 'absolute',
+                top: 15,
+                left: 10,
+                color: 'green',
+              }}
+            />
+          </View>
+        </View>
+        <Text>Nombre de usuario:</Text>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <View style={{ position: 'relative', flex: 1 }}>
+            <TextInput
+              style={{
+                ...styles.botonesText,
+                marginBottom: 20,
+                color: 'black',
+                textAlign: 'center',
+                borderColor: 'green',
+                borderWidth: 1,
+                borderRadius: 20,
+              }}
+              placeholder="Nombre de usuario"
+              onChangeText={(text) => setUsername(text)}
+              value={username}
+            />
+            <Icon
+              name="person-outline"
+              size={20}
+              style={{
+                position: 'absolute',
+                top: 15,
+                left: 10,
+                color: 'green',
+              }}
             />
           </View>
         </View>
         <Text>Email:</Text>
-        <View style={{flexDirection: 'row', alignItems: 'center'}}>
-          <View style={{position: 'relative', flex: 1}}>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <View style={{ position: 'relative', flex: 1 }}>
             <TextInput
               style={{
                 ...styles.botonesText,
@@ -104,19 +214,24 @@ export const RegisterScreen = ({navigation}: Props) => {
                 borderRadius: 20,
               }}
               placeholder="Email"
-              onChangeText={text => setEmail(text)}
+              onChangeText={(text) => setEmail(text)}
               value={email}
             />
             <Icon
               name="mail-outline"
               size={20}
-              style={{position: 'absolute', top: 15, left: 10, color: 'green'}}
+              style={{
+                position: 'absolute',
+                top: 15,
+                left: 10,
+                color: 'green',
+              }}
             />
           </View>
         </View>
         <Text>Contraseña:</Text>
-        <View style={{flexDirection: 'row', alignItems: 'center'}}>
-          <View style={{position: 'relative', flex: 1}}>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <View style={{ position: 'relative', flex: 1 }}>
             <TextInput
               style={{
                 ...styles.botonesText,
@@ -129,19 +244,24 @@ export const RegisterScreen = ({navigation}: Props) => {
               }}
               placeholder="Contraseña"
               secureTextEntry
-              onChangeText={text => setPassword(text)}
+              onChangeText={(text) => setPassword(text)}
               value={password}
             />
             <Icon
               name="lock-closed-outline"
               size={20}
-              style={{position: 'absolute', top: 15, left: 10, color: 'green'}}
+              style={{
+                position: 'absolute',
+                top: 15,
+                left: 10,
+                color: 'green',
+              }}
             />
           </View>
         </View>
         <Text>Verifica la contraseña:</Text>
-        <View style={{flexDirection: 'row', alignItems: 'center'}}>
-          <View style={{position: 'relative', flex: 1}}>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <View style={{ position: 'relative', flex: 1 }}>
             <TextInput
               style={{
                 ...styles.botonesText,
@@ -154,19 +274,24 @@ export const RegisterScreen = ({navigation}: Props) => {
               }}
               placeholder="Confirmar contraseña"
               secureTextEntry
-              onChangeText={text => setPasswordConfirm(text)}
+              onChangeText={(text) => setPasswordConfirm(text)}
               value={passwordConfirm}
             />
             <Icon
               name="lock-closed-outline"
               size={20}
-              style={{position: 'absolute', top: 15, left: 10,  color: 'green'}}
+              style={{
+                position: 'absolute',
+                top: 15,
+                left: 10,
+                color: 'green',
+              }}
             />
           </View>
         </View>
         <Text>Edad:</Text>
-        <View style={{flexDirection: 'row', alignItems: 'center'}}>
-          <View style={{position: 'relative', flex: 1}}>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <View style={{ position: 'relative', flex: 1 }}>
             <TextInput
               style={{
                 ...styles.botonesText,
@@ -179,13 +304,18 @@ export const RegisterScreen = ({navigation}: Props) => {
               }}
               placeholder="Edad"
               keyboardType="numeric"
-              onChangeText={text => setAge(text)}
+              onChangeText={(text) => setAge(text)}
               value={age}
             />
             <Icon
               name="happy-outline"
               size={20}
-              style={{position: 'absolute', top: 15, left: 10, color: 'green'}}
+              style={{
+                position: 'absolute',
+                top: 15,
+                left: 10,
+                color: 'green',
+              }}
             />
           </View>
         </View>
@@ -202,7 +332,7 @@ export const RegisterScreen = ({navigation}: Props) => {
           }}
           onPress={openDatePicker}
         >
-          <Text style={{textAlign: 'center'}}>
+          <Text style={{ textAlign: 'center' }}>
             {birthdate ? birthdate : 'Seleccionar fecha de nacimiento'}
           </Text>
         </TouchableOpacity>
@@ -228,7 +358,7 @@ export const RegisterScreen = ({navigation}: Props) => {
         onChangeText={text => setBirthdate(text)}
         value={birthdate}
       /> */}
-        <View style={{alignItems: 'center'}}>
+        <View style={{ alignItems: 'center' }}>
           <TouchableOpacity
             style={{
               margin: 20,
@@ -243,10 +373,10 @@ export const RegisterScreen = ({navigation}: Props) => {
             }}
             onPress={handleRegister}
           >
-            <Text style={{color: 'white'}}>Registrarse</Text>
+            <Text style={{ color: 'white' }}>Registrarse</Text>
           </TouchableOpacity>
         </View>
       </View>
     </ScrollView>
-  );
-};
+  )
+}

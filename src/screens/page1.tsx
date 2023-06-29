@@ -10,8 +10,25 @@ import {Button, Image, Text, View} from 'react-native';
 import {styles} from '../themes/appTheme';
 import {ScrollView, TouchableOpacity} from 'react-native-gesture-handler';
 import { DrawerScreenProps } from '@react-navigation/drawer';
+import { api } from '../api/api';
 
 // interface Props extends StackScreenProps<any, any> {}
+
+// interface credentials {
+//   user: string;
+//   text: string;
+//   replyCounter: number;
+//   retweetCounter: number;
+//   likeCounter: number;
+//   tweet: number;
+// }
+
+// const publi = async ({ user, text, replyCounter, retweetCounter, likeCounter, tweet }: credentials) => {
+//   try {
+//     const RES = await api.post('')
+//   }
+// }
+
 interface Props extends DrawerScreenProps<any, any> {}
 
 export const Page1 = ({navigation}: Props) => {

@@ -1,7 +1,3 @@
-/* eslint-disable no-lone-blocks */
-/* eslint-disable no-self-compare */
-/* eslint-disable react-native/no-inline-styles */
-/* eslint-disable prettier/prettier */
 import React, {useState} from 'react';
 import {View, TextInput, Alert} from 'react-native';
 import {styles} from '../themes/appTheme';
@@ -10,27 +6,36 @@ import {Text} from 'react-native';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {Image} from 'react-native';
+import { api } from '../api/api';
 
 interface Props extends StackScreenProps<any, any> {}
 
 export const LoginScreen = ({navigation}: Props) => {
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleLogin = () => {
-    // Aquí puedes realizar la lógica de autenticación con el email y la contraseña ingresados
-    console.log('Email:', email);
-    console.log('Password:', password);
-    navigation.navigate('DrawerPro');
-    if (email === '' || password === '') {
-      Alert.alert('Por favor complete todos los campos'),
-        navigation.navigate('LoginScreen');
-    } else {
-      email === email || password === password;
-      {
-        navigation.navigate('DrawerPro');
-      }
+  interface credentials {username: String, password: String}
+
+  const login = async ( { username, password }:credentials ) => {
+try {
+  const RES = await api.post("/auth/sign-in",{username, password})
+  console.log(username, password);
+  console.log(RES);
+  return true;
+} catch (error:any) {
+  Alert.alert('Login error', "usuario o contraseña incorrectos.")
+  return false;
+}
+  }
+  
+  const handleLogin = async() => {
+    if (username === '' || password === '') {
+     return Alert.alert('Login error' ,'Por favor complete todos los campos');
     }
+    if (await login({ username, password })){
+      navigation.navigate('DrawerPro')
+    }
+
   };
 
   return (
@@ -44,7 +49,7 @@ export const LoginScreen = ({navigation}: Props) => {
         }}
         source={require('../assets/logograsshopper.webp')}
       />
-      <Text>Email:</Text>
+      <Text>Usuario:</Text>
       <View style={{flexDirection: 'row', alignItems: 'center'}}>
         <View style={{position: 'relative', flex: 1}}>
           <TextInput
@@ -57,9 +62,9 @@ export const LoginScreen = ({navigation}: Props) => {
               borderWidth: 1,
               borderRadius: 20,
             }}
-            placeholder="Email"
-            onChangeText={text => setEmail(text)}
-            value={email}
+            placeholder="Username"
+            onChangeText={text => setUsername(text)}
+            value={username}
           />
           <Icon
             name="checkmark-outline"
